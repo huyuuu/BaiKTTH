@@ -1,57 +1,70 @@
 package th61130384;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
+public class Client
 
-public class Client extends Thread {
-	Socket socketClient;
-	int id = -1;
-	
+{
+    public static void main(String[] args) throws IOException
 
-	public Client(Socket socketClient, int id) {
-		super();
-		this.socketClient = socketClient;
-		this.id = id;
-		
-	}
+    {
+        Socket mySocket = null;
 
+        DataOutputStream dos = null;
 
+        DataInputStream dis=null;
 
-	@Override
-	public void run() {
-		try {
-			System.out.print(socketClient.getInetAddress().getHostAddress());
-			System.out.print(id);
-			OutputStream osToClient = socketClient.getOutputStream();	
-			OutputStreamWriter write2Client = new OutputStreamWriter(osToClient);
-			BufferedWriter buffW = new BufferedWriter(write2Client);
-		
-			InputStream in = socketClient.getInputStream();
-			InputStreamReader inReader = new InputStreamReader(in);
-			BufferedReader buffR = new BufferedReader(inReader);
-			while(true) {
-				String chuoiNhan = buffR.readLine();
-				System.out.print(chuoiNhan);
-				//Gửi trả
-				String chuoiGui = chuoiNhan;
-				buffW.write(chuoiGui+"\n");
-				buffW.flush();
-				if(chuoiGui.equals("Bye")) break;
-			}
-			socketClient.close();
-		} 
-		catch (Exception e) 
-		{
-			System.err.println(e.getMessage());
-		}
-	
-	}
+       
+
+        try {
+
+            mySocket = new Socket("localhost", 8888);
+
+            dos = new DataOutputStream(mySocket.getOutputStream());
+
+            dis = new DataInputStream(mySocket.getInputStream());
+
+            Scanner input = new Scanner(System.in);
+
+            String s = null;
+
+            while(true)
+
+            {
+
+                System.out.print("\nNhập số: ");
+
+                s =input.nextLine();
+
+                dos.writeUTF(s);
+
+               
+
+                String str=dis.readUTF();
+
+                System.out.print("Kết quả từ Server : "+str);
+
+            }
+
+        }
+
+        catch(Exception e) {
+
+            System.out.print("Dừng");
+
+            dis.close();
+
+            dos.close();
+
+            mySocket.close();
+
+            e.printStackTrace();
+
+        }
+
+    }
+
 }
-	
